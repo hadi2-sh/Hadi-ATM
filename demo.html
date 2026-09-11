@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hadi ATM - Online Banking Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --border-color: #334155;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    
+    body {
+      background: radial-gradient(circle at top left, #1e1b4b, #0f172a);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 460px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .brand { text-align: center; margin-bottom: 25px; }
+    .brand i { font-size: 2.5rem; color: var(--primary); margin-bottom: 10px; }
+    .brand h1 { font-size: 1.5rem; font-weight: 700; }
+
+    .input-group { margin-bottom: 18px; }
+    .input-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
+
+    .input-wrapper { position: relative; }
+    .input-wrapper i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+    .input-wrapper input {
+      width: 100%; padding: 12px 14px 12px 42px; background: #0f172a;
+      border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); font-size: 0.95rem; outline: none;
+    }
+
+    .btn {
+      width: 100%; padding: 12px; background: var(--primary); color: white;
+      border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer;
+      display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s;
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #334155; }
+    .btn-secondary:hover { background: #475569; }
+
+    .alert { padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px; }
+    .alert-error { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
+    .alert-success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; }
+
+    .balance-card {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 25px;
+    }
+    .balance-card p { font-size: 0.85rem; color: #bfdbfe; }
+    .balance-card h2 { font-size: 2.2rem; font-weight: 700; margin-top: 5px; }
+
+    .grid-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .action-card { background: #0f172a; border: 1px solid var(--border-color); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.82rem; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border-color); }
+    th { color: var(--text-muted); }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen">
+      <div class="brand">
+        <i class="fa-solid fa-building-columns"></i>
+        <h1>Hadi ATM</h1>
+      </div>
+
+      <div id="login-alert" class="alert alert-error hidden"></div>
+
+      <form id="login-form">
+        <div class="input-group">
+          <label>User ID</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="user-id" placeholder="user101" required>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>PIN Code</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="pin" placeholder="1234" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn"><i class="fa-solid fa-right-to-bracket"></i> Login to ATM</button>
+      </form>
+
+      <p style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:20px;">
+        Demo Users: <b>user101</b> (PIN: 1234) | <b>user102</b> (PIN: 5678)
+      </p>
+    </div>
+
+    <!-- DASHBOARD SCREEN -->
+    <div id="dashboard-screen" class="hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div>
+          <span style="color:var(--text-muted); font-size:0.8rem;">Welcome back,</span>
+          <h3 id="display-user" style="font-size:1.2rem;">User</h3>
+        </div>
+        <button onclick="logout()" class="btn btn-secondary" style="width:auto; padding:8px 14px; font-size:0.8rem;">
+          <i class="fa-solid fa-power-off"></i> Exit
+        </button>
+      </div>
+
+      <div id="action-alert" class="alert hidden"></div>
+
+      <div class="balance-card">
+        <p>Available Balance</p>
+        <h2 id="display-balance">$0.00</h2>
+      </div>
+
+      <div class="grid-menu">
+        <button onclick="showAction('withdraw')" class="btn btn-secondary"><i class="fa-solid fa-money-bill-transfer"></i> Withdraw</button>
+        <button onclick="showAction('deposit')" class="btn btn-secondary"><i class="fa-solid fa-piggy-bank"></i> Deposit</button>
+        <button onclick="showAction('transfer')" class="btn btn-secondary"><i class="fa-solid fa-paper-plane"></i> Transfer</button>
+        <button onclick="fetchHistory()" class="btn btn-secondary"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
+      </div>
+
+      <!-- ACTION FORM -->
+      <div id="action-card" class="action-card hidden">
+        <h3 id="action-title" style="margin-bottom:12px;">Transaction</h3>
+        <div id="recipient-group" class="input-group hidden">
+          <label>Recipient Account ID</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-address-card"></i>
+            <input type="text" id="recipient-id" placeholder="user102">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Amount ($)</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-dollar-sign"></i>
+            <input type="number" id="action-amount" min="1" step="any" placeholder="0.00">
+          </div>
+        </div>
+        <button onclick="submitAction()" class="btn"><i class="fa-solid fa-check"></i> Confirm Transaction</button>
+      </div>
+
+      <!-- HISTORY TABLE -->
+      <div id="history-section" class="action-card hidden">
+        <h3>Recent Transactions</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody id="history-rows"></tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Local In-Memory Database for Browser Demo
+    const db = {
+      users: {
+        "user101": { pin: "1234", balance: 1000.00, attempts: 0, locked: false, history: [] },
+        "user102": { pin: "5678", balance: 2500.00, attempts: 0, locked: false, history: [] }
+      }
+    };
+
+    let currentUser = null;
+    let currentActionType = "";
+
+    document.getElementById("login-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const userId = document.getElementById("user-id").value.trim();
+      const pin = document.getElementById("pin").value.trim();
+      const user = db.users[userId];
+
+      if (!user) {
+        showAlert("login-alert", "User not found!", "error");
+        return;
+      }
+
+      if (user.locked) {
+        showAlert("login-alert", "Account locked due to 3 failed attempts!", "error");
+        return;
+      }
+
+      if (user.pin === pin) {
+        user.attempts = 0;
+        currentUser = userId;
+        document.getElementById("display-user").innerText = currentUser;
+        updateBalanceDisplay();
+        document.getElementById("login-screen").classList.add("hidden");
+        document.getElementById("dashboard-screen").classList.remove("hidden");
+      } else {
+        user.attempts++;
+        if (user.attempts >= 3) {
+          user.locked = true;
+          showAlert("login-alert", "Account locked! 3 failed PIN attempts.", "error");
+        } else {
+          showAlert("login-alert", `Invalid PIN. ${3 - user.attempts} attempt(s) left.`, "error");
+        }
+      }
+    });
+
+    function showAction(type) {
+      currentActionType = type;
+      document.getElementById("history-section").classList.add("hidden");
+      document.getElementById("action-card").classList.remove("hidden");
+      document.getElementById("action-amount").value = "";
+      
+      const titleMap = { withdraw: "Withdraw Funds", deposit: "Deposit Funds", transfer: "Transfer Funds" };
+      document.getElementById("action-title").innerText = titleMap[type];
+
+      if (type === 'transfer') {
+        document.getElementById("recipient-group").classList.remove("hidden");
+      } else {
+        document.getElementById("recipient-group").classList.add("hidden");
+      }
+    }
+
+    function submitAction() {
+      const amount = parseFloat(document.getElementById("action-amount").value);
+      if (!amount || amount <= 0) {
+        showAlert("action-alert", "Enter a valid positive amount.", "error");
+        return;
+      }
+
+      const user = db.users[currentUser];
+      const now = new Date().toLocaleTimeString();
+
+      if (currentActionType === 'withdraw') {
+        if (amount > user.balance) {
+          showAlert("action-alert", "Insufficient balance!", "error");
+          return;
+        }
+        user.balance -= amount;
+        user.history.unshift({ time: now, type: "Withdrawal", amount, postBalance: user.balance });
+        showAlert("action-alert", `Successfully withdrew $${amount.toFixed(2)}`, "success");
+      } 
+      else if (currentActionType === 'deposit') {
+        user.balance += amount;
+        user.history.unshift({ time: now, type: "Deposit", amount, postBalance: user.balance });
+        showAlert("action-alert", `Successfully deposited $${amount.toFixed(2)}`, "success");
+      }
+      else if (currentActionType === 'transfer') {
+        const recipientId = document.getElementById("recipient-id").value.trim();
+        const recipient = db.users[recipientId];
+
+        if (!recipient) {
+          showAlert("action-alert", "Recipient account does not exist!", "error");
+          return;
+        }
+        if (recipientId === currentUser) {
+          showAlert("action-alert", "Cannot transfer money to yourself!", "error");
+          return;
+        }
+        if (amount > user.balance) {
+          showAlert("action-alert", "Insufficient funds for transfer!", "error");
+          return;
+        }
+
+        user.balance -= amount;
+        recipient.balance += amount;
+
+        user.history.unshift({ time: now, type: `Transfer Out (${recipientId})`, amount, postBalance: user.balance });
+        recipient.history.unshift({ time: now, type: `Transfer In (${currentUser})`, amount, postBalance: recipient.balance });
+
+        showAlert("action-alert", `Transferred $${amount.toFixed(2)} to ${recipientId}`, "success");
+      }
+
+      updateBalanceDisplay();
+      document.getElementById("action-card").classList.add("hidden");
+    }
+
+    function fetchHistory() {
+      document.getElementById("action-card").classList.add("hidden");
+      const user = db.users[currentUser];
+      const rows = document.getElementById("history-rows");
+      rows.innerHTML = "";
+
+      if (user.history.length === 0) {
+        rows.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No transactions yet</td></tr>`;
+      } else {
+        user.history.forEach(t => {
+          const isPositive = t.type.includes("Deposit") || t.type.includes("In");
+          rows.innerHTML += `
+            <tr>
+              <td>${t.time}</td>
+              <td>${t.type}</td>
+              <td style="color:${isPositive ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                $${t.amount.toFixed(2)}
+              </td>
+              <td>$${t.postBalance.toFixed(2)}</td>
+            </tr>
+          `;
+        });
+      }
+      document.getElementById("history-section").classList.remove("hidden");
+    }
+
+    function updateBalanceDisplay() {
+      document.getElementById("display-balance").innerText = `$${db.users[currentUser].balance.toFixed(2)}`;
+    }
+
+    function logout() {
+      currentUser = null;
+      document.getElementById("dashboard-screen").classList.add("hidden");
+      document.getElementById("login-screen").classList.remove("hidden");
+      document.getElementById("login-form").reset();
+    }
+
+    function showAlert(elementId, message, type) {
+      const el = document.getElementById(elementId);
+      el.innerText = message;
+      el.className = `alert ${type === 'error' ? 'alert-error' : 'alert-success'}`;
+      el.classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>
