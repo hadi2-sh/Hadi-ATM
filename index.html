@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hadi Bank - Online ATM System</title>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+          --primary: #2563eb;
+          --primary-hover: #1d4ed8;
+          --bg-color: #0f172a;
+          --card-bg: #1e293b;
+          --text-main: #f8fafc;
+          --text-muted: #94a3b8;
+          --accent-green: #10b981;
+          --accent-red: #ef4444;
+          --border-color: #334155;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+        body {
+          background: radial-gradient(circle at top left, #1e1b4b, #0f172a);
+          color: var(--text-main);
+          min-height: 100vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 20px;
+        }
+
+        .container {
+          width: 100%;
+          max-width: 460px;
+          background: var(--card-bg);
+          border: 1px solid var(--border-color);
+          border-radius: 20px;
+          padding: 30px;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+          backdrop-filter: blur(10px);
+        }
+
+        .brand {
+          text-align: center;
+          margin-bottom: 25px;
+        }
+
+        .brand i {
+          font-size: 2.5rem;
+          color: var(--primary);
+          margin-bottom: 10px;
+        }
+
+        .brand h1 {
+          font-size: 1.5rem;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+        }
+
+        .input-group {
+          margin-bottom: 18px;
+        }
+
+        .input-group label {
+          display: block;
+          font-size: 0.85rem;
+          color: var(--text-muted);
+          margin-bottom: 6px;
+          font-weight: 500;
+        }
+
+        .input-wrapper {
+          position: relative;
+        }
+
+        .input-wrapper i {
+          position: absolute;
+          left: 14px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: var(--text-muted);
+        }
+
+        .input-wrapper input {
+          width: 100%;
+          padding: 12px 14px 12px 42px;
+          background: #0f172a;
+          border: 1px solid var(--border-color);
+          border-radius: 10px;
+          color: var(--text-main);
+          font-size: 0.95rem;
+          outline: none;
+          transition: all 0.2s;
+        }
+
+        .input-wrapper input:focus {
+          border-color: var(--primary);
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn {
+          width: 100%;
+          padding: 12px;
+          background: var(--primary);
+          color: white;
+          border: none;
+          border-radius: 10px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-secondary { background: #334155; }
+        .btn-secondary:hover { background: #475569; }
+
+        .alert {
+          padding: 12px;
+          border-radius: 10px;
+          font-size: 0.85rem;
+          margin-bottom: 20px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .alert-error { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
+        .alert-success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; }
+
+        /* Dashboard Styles */
+        .balance-card {
+          background: linear-gradient(135deg, #2563eb, #1d4ed8);
+          border-radius: 16px;
+          padding: 20px;
+          text-align: center;
+          margin-bottom: 25px;
+          box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+        }
+
+        .balance-card p { font-size: 0.85rem; color: #bfdbfe; font-weight: 500; }
+        .balance-card h2 { font-size: 2.2rem; font-weight: 700; margin-top: 5px; }
+
+        .grid-menu {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+          margin-bottom: 20px;
+        }
+
+        .action-card {
+          background: #0f172a;
+          border: 1px solid var(--border-color);
+          padding: 20px;
+          border-radius: 12px;
+          margin-bottom: 20px;
+        }
+
+        .action-card h3 { margin-bottom: 15px; font-size: 1.1rem; }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 15px;
+          font-size: 0.82rem;
+        }
+
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { color: var(--text-muted); font-weight: 500; }
+        td { color: var(--text-main); }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen">
+        <div class="brand">
+            <i class="fa-solid fa-building-columns"></i>
+            <h1>Hadi Digital ATM</h1>
+        </div>
+
+        <div id="login-alert" class="alert alert-error hidden"></div>
+
+        <form id="login-form">
+            <div class="input-group">
+                <label>User ID</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="user-id" placeholder="Enter User ID (e.g. user101)" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>PIN Code</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="pin" placeholder="Enter PIN" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn"><i class="fa-solid fa-right-to-bracket"></i> Secure Login</button>
+        </form>
+
+        <p style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:20px;">
+            Demo Credentials: <b>user101</b> (PIN: 1234) | <b>user102</b> (PIN: 5678)
+        </p>
+    </div>
+
+    <!-- DASHBOARD SCREEN -->
+    <div id="dashboard-screen" class="hidden">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <div>
+                <span style="color:var(--text-muted); font-size:0.8rem;">Welcome back,</span>
+                <h3 id="display-user" style="font-size:1.2rem;">User</h3>
+            </div>
+            <button onclick="logout()" class="btn btn-secondary" style="width:auto; padding:8px 14px; font-size:0.8rem;">
+                <i class="fa-solid fa-power-off"></i> Exit
+            </button>
+        </div>
+
+        <div id="action-alert" class="alert hidden"></div>
+
+        <div class="balance-card">
+            <p>Available Balance</p>
+            <h2 id="display-balance">$0.00</h2>
+        </div>
+
+        <div class="grid-menu">
+            <button onclick="showAction('withdraw')" class="btn btn-secondary"><i class="fa-solid fa-money-bill-transfer"></i> Withdraw</button>
+            <button onclick="showAction('deposit')" class="btn btn-secondary"><i class="fa-solid fa-piggy-bank"></i> Deposit</button>
+            <button onclick="showAction('transfer')" class="btn btn-secondary"><i class="fa-solid fa-paper-plane"></i> Transfer</button>
+            <button onclick="fetchHistory()" class="btn btn-secondary"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
+        </div>
+
+        <!-- ACTION FORM -->
+        <div id="action-card" class="action-card hidden">
+            <h3 id="action-title">Transaction</h3>
+            <div id="recipient-group" class="input-group hidden">
+                <label>Recipient Account ID</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-address-card"></i>
+                    <input type="text" id="recipient-id" placeholder="e.g. user102">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Amount ($)</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-dollar-sign"></i>
+                    <input type="number" id="action-amount" min="1" step="any" placeholder="0.00">
+                </div>
+            </div>
+            <button onclick="submitAction()" class="btn"><i class="fa-solid fa-check"></i> Confirm Transaction</button>
+        </div>
+
+        <!-- HISTORY TABLE -->
+        <div id="history-section" class="action-card hidden">
+            <h3>Recent Transactions</h3>
+            <table>
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Balance</th>
+                </tr>
+                </thead>
+                <tbody id="history-rows"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    const API_BASE = "http://localhost:8080/api/atm";
+    let currentUser = null;
+    let currentActionType = "";
+
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const userId = document.getElementById("user-id").value;
+      const pin = document.getElementById("pin").value;
+
+      try {
+        const res = await fetch(`${API_BASE}/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId, pin })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          currentUser = userId;
+          document.getElementById("display-user").innerText = currentUser;
+          document.getElementById("display-balance").innerText = `$${data.account.balance.toFixed(2)}`;
+          document.getElementById("login-screen").classList.add("hidden");
+          document.getElementById("dashboard-screen").classList.remove("hidden");
+        } else {
+          showAlert("login-alert", data.message, "error");
+        }
+      } catch (err) {
+        showAlert("login-alert", "Cannot connect to server. Is Spring Boot running?", "error");
+      }
+    });
+
+    function showAction(type) {
+      currentActionType = type;
+      document.getElementById("history-section").classList.add("hidden");
+      document.getElementById("action-card").classList.remove("hidden");
+      document.getElementById("action-amount").value = "";
+
+      const titleMap = { withdraw: "Withdraw Funds", deposit: "Deposit Funds", transfer: "Transfer Funds" };
+      document.getElementById("action-title").innerText = titleMap[type];
+
+      if (type === 'transfer') {
+        document.getElementById("recipient-group").classList.remove("hidden");
+      } else {
+        document.getElementById("recipient-group").classList.add("hidden");
+      }
+    }
+
+    async function submitAction() {
+      const amount = parseFloat(document.getElementById("action-amount").value);
+      if (!amount || amount <= 0) {
+        showAlert("action-alert", "Enter a valid amount.", "error");
+        return;
+      }
+
+      let url = `${API_BASE}/${currentActionType}`;
+      let bodyData = { userId: currentUser, amount };
+
+      if (currentActionType === 'transfer') {
+        const recipientId = document.getElementById("recipient-id").value;
+        bodyData = { senderId: currentUser, recipientId, amount };
+      }
+
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bodyData)
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          showAlert("action-alert", data.message, "success");
+          document.getElementById("display-balance").innerText = `$${data.balance.toFixed(2)}`;
+          document.getElementById("action-card").classList.add("hidden");
+        } else {
+          showAlert("action-alert", data.message, "error");
+        }
+      } catch (err) {
+        showAlert("action-alert", "Transaction failed. Server error.", "error");
+      }
+    }
+
+    async function fetchHistory() {
+      document.getElementById("action-card").classList.add("hidden");
+      try {
+        const res = await fetch(`${API_BASE}/account/${currentUser}`);
+        const data = await res.json();
+
+        const rows = document.getElementById("history-rows");
+        rows.innerHTML = "";
+
+        data.history.forEach(t => {
+          rows.innerHTML += `
+            <tr>
+              <td>${t.timestamp.split(' ')[1]}</td>
+              <td>${t.type}</td>
+              <td style="color:${t.type.includes('Deposit') || t.type.includes('In') ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                $${t.amount.toFixed(2)}
+              </td>
+              <td>$${t.postBalance.toFixed(2)}</td>
+            </tr>
+          `;
+        });
+        document.getElementById("history-section").classList.remove("hidden");
+      } catch (err) {
+        showAlert("action-alert", "Failed to load history.", "error");
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      document.getElementById("dashboard-screen").classList.add("hidden");
+      document.getElementById("login-screen").classList.remove("hidden");
+      document.getElementById("login-form").reset();
+    }
+
+    function showAlert(elementId, message, type) {
+      const el = document.getElementById(elementId);
+      el.innerText = message;
+      el.className = `alert ${type === 'error' ? 'alert-error' : 'alert-success'}`;
+      el.classList.remove("hidden");
+    }
+</script>
+</body>
+</html>
